@@ -2,12 +2,13 @@ import { Button, ButtonGroup } from '@blueprintjs/core'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../constants'
 import { ScreenLocalContextProvider } from '../context/ScreenLocalContext'
+import SystemTime from '@renderer/components/SystemTime'
 
-export const Home = () => {
+export const Home = (): React.ReactNode => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const isCurrentScreenSelected = (route: ROUTES, selectedScreen: string) => {
+  const isCurrentScreenSelected = (route: ROUTES, selectedScreen: string): boolean => {
     return selectedScreen.includes(route)
   }
 
@@ -49,6 +50,10 @@ export const Home = () => {
         <ScreenLocalContextProvider>
           <Outlet />
         </ScreenLocalContextProvider>
+      </div>
+
+      <div className="absolute right-0 mt-3 mr-3">
+        <SystemTime />
       </div>
     </div>
   )

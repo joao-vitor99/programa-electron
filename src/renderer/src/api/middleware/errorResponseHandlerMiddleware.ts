@@ -1,17 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
 import { HttpStatusCode } from '../../constants'
 import { LOG_LEVEL, logger } from '../../utils'
+import { fromError } from 'zod-validation-error'
 
 export function errorHandlerMiddleware(
   error: Error,
   _req: Request,
   res: Response,
   _next: NextFunction
-) {
+): Response<any, Record<string, any>> {
   if (error instanceof ZodError) {
-    const formattedError = error.format()
+    const formattedError = fromError(error)
 
     logger({
       level: LOG_LEVEL.ERROR,

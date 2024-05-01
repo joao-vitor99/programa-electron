@@ -16,7 +16,7 @@ interface AlertModalProps {
   }
 }
 
-const AlertModal = (props: AlertModalProps) => {
+const AlertModal = (props: AlertModalProps): React.ReactNode => {
   return (
     <Alert
       cancelButtonText={props.cancelButtonText}

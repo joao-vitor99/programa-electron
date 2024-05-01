@@ -1,7 +1,7 @@
-import { Spinner, ToastProps } from '@blueprintjs/core'
+import { Dialog, DialogBody, Spinner, ToastProps } from '@blueprintjs/core'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Client } from '@prisma/client'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { useMutation, useQuery } from 'react-query'
 import DeleteAlertModal from '../components/AlertModal'
@@ -27,8 +27,13 @@ export const Clients = (): JSX.Element => {
     ;(await AppToaster).show(props)
   }
 
-  // TODO - refactor opening logic, encapsulate the logic on the component itself
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false)
+
+  const toggleOverlay = useCallback(() => {
+    setScreenMode(SCREEN_MODE.VIEW)
+    return setIsOverlayOpen((open) => !open)
+  }, [setIsOverlayOpen])
 
   const { isLoading, data, refetch } = useQuery('clients', getClients, {
     onError: () => {
@@ -116,8 +121,10 @@ export const Clients = (): JSX.Element => {
   const actions: ScreenMenuProps['actions'] = {
     onNewClick: (changeScreen) => {
       changeScreen()
+      toggleOverlay()
     },
     onEditClick: (changeScreen) => {
+      changeScreen()
       changeScreen()
     },
     onSaveClick: (changeScreen) => {
@@ -126,7 +133,7 @@ export const Clients = (): JSX.Element => {
 
         if (createdSuccessfully) {
           form.reset()
-          changeScreen()
+          toggleOverlay()
         }
       }
 
@@ -140,11 +147,12 @@ export const Clients = (): JSX.Element => {
 
         if (editedSuccessfully) {
           form.reset()
-          changeScreen()
+          toggleOverlay()
         }
       }
 
       form.handleSubmit(screenMode === SCREEN_MODE.NEW ? onCreate : onEdit)()
+      changeScreen()
     },
     onDeleteClick: () => {
       setIsDeleteModalOpen(true)
@@ -152,57 +160,69 @@ export const Clients = (): JSX.Element => {
     onCancelClick: (changeScreen) => {
       form.reset()
       setSelectedRow({})
+      toggleOverlay()
       changeScreen()
     }
   }
 
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <DataHeader
-          title="CLIENTES"
-          menuProps={{
-            actions,
-            screenMode: { screenMode, setScreenMode }
-          }}
-        />
+      <FormProvider {...form}>
+        <div className="flex flex-col gap-2">
+          <DataHeader
+            title="CLIENTES"
+            menuProps={{
+              actions,
+              screenMode: { screenMode, setScreenMode }
+            }}
+          />
 
-        <FormProvider {...form}>
           {isLoading ? (
             <Spinner size={110} intent="primary" />
-          ) : screenMode === SCREEN_MODE.VIEW ? (
+          ) : (
             <Read
               clients={data?.data as Client[]}
               onRowSelect={(data) => {
                 setSelectedRow(data as Client)
               }}
             />
-          ) : (
-            <CreateOrEdit />
           )}
-        </FormProvider>
-      </div>
+        </div>
 
-      <DeleteAlertModal
-        isOpen={isDeleteModalOpen}
-        confirmButtonText="Deletar"
-        cancelButtonText="Cancelar"
-        icon="trash"
-        intent="danger"
-        actions={{
-          onCancel: () => {
-            setSelectedRow({})
-            setIsDeleteModalOpen(false)
-          },
-          onConfirm: () => {
-            handleDeleteActionButton()
-          }
-        }}
-      >
-        <p>
-          Deletar o cliente <b>{(selectedRow as Client)?.name}</b> ?
-        </p>
-      </DeleteAlertModal>
+        <Dialog
+          isOpen={isOverlayOpen}
+          usePortal={true}
+          onClose={toggleOverlay}
+          canEscapeKeyClose={true}
+          canOutsideClickClose={false}
+          className="w-fit h-fit"
+        >
+          <DialogBody className="p-0">
+            <CreateOrEdit onSave={actions?.onSaveClick} onCancel={actions?.onCancelClick} />
+          </DialogBody>
+        </Dialog>
+
+        <DeleteAlertModal
+          isOpen={isDeleteModalOpen}
+          confirmButtonText="Deletar"
+          cancelButtonText="Cancelar"
+          icon="trash"
+          intent="danger"
+          actions={{
+            onCancel: () => {
+              setSelectedRow({})
+              setIsDeleteModalOpen(false)
+            },
+            onConfirm: () => {
+              handleDeleteActionButton()
+            }
+          }}
+        >
+          <p>
+            Deletar o cliente <b>{(selectedRow as Client)?.name}</b> ?
+          </p>
+        </DeleteAlertModal>
+      </FormProvider>
     </>
   )
 }

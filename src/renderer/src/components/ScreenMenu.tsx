@@ -17,7 +17,7 @@ export interface ScreenMenuProps {
   }
 }
 
-export const ScreenMenu = (props: ScreenMenuProps) => {
+export const ScreenMenu = (props: ScreenMenuProps): React.ReactNode => {
   const {
     screenMode: { screenMode, setScreenMode }
   } = props
@@ -38,14 +38,15 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
   }, [screenMode])
 
   return (
-    <div className="bg-white  p-1 flex justify-between gap-4 border border-lightgray border-solid rounded">
+    <div className="bg-white p-1 flex justify-start gap-2 border border-lightgray border-solid rounded">
       <Button
         icon="plus"
         fill
         intent="success"
         disabled={screenMode === SCREEN_MODE.EDIT || screenMode === SCREEN_MODE.NEW}
+        className="max-w-[150px]"
         onClick={() => {
-          const changeScreen = () => {
+          const changeScreen = (): void => {
             setScreenMode(SCREEN_MODE.NEW)
           }
 
@@ -64,10 +65,11 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
         disabled={
           screenMode === SCREEN_MODE.EDIT || screenMode === SCREEN_MODE.NEW || !selectedItem
         }
+        className="max-w-[150px]"
         onClick={(e) => {
           e.preventDefault()
 
-          const changeScreen = () => {
+          const changeScreen = (): void => {
             setScreenMode(SCREEN_MODE.EDIT)
           }
 
@@ -78,52 +80,16 @@ export const ScreenMenu = (props: ScreenMenuProps) => {
       </Button>
 
       <Button
-        icon="floppy-disk"
-        fill
-        intent="warning"
-        form="create-form"
-        type="submit"
-        disabled={screenMode === SCREEN_MODE.VIEW}
-        onClick={(e) => {
-          e.preventDefault()
-
-          const changeScreen = () => {
-            setScreenMode(SCREEN_MODE.VIEW)
-          }
-
-          props?.actions?.onSaveClick?.(changeScreen)
-        }}
-      >
-        Salvar
-      </Button>
-
-      <Button
         fill
         icon="trash"
         intent="danger"
         disabled={screenMode !== SCREEN_MODE.VIEW || !selectedItem}
+        className="max-w-[150px]"
         onClick={() => {
           props?.actions?.onDeleteClick?.()
         }}
       >
         Excluir
-      </Button>
-
-      <Button
-        fill
-        intent="none"
-        icon="disable"
-        disabled={screenMode === SCREEN_MODE.VIEW}
-        onClick={() => {
-          // TODO: Change icon and text color to intent="DANGER"
-          const changeScreen = () => {
-            setScreenMode(SCREEN_MODE.VIEW)
-          }
-
-          props?.actions?.onCancelClick?.(changeScreen)
-        }}
-      >
-        Cancelar
       </Button>
     </div>
   )

@@ -1,12 +1,13 @@
 // import Versions from './components/Versions'
 // import electronLogo from './assets/electron.svg'
+import { BlueprintProvider } from '@blueprintjs/core'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { ROUTES } from './constants'
 import { Clients } from './screens/Clients'
-import { Orders } from './screens/Orders'
 import { Home } from './screens/Home'
+import { Orders } from './screens/Orders'
 
 function App(): JSX.Element {
   // const ipcHandle = (): void => window.electron.ipcRenderer.send('ping')
@@ -31,10 +32,12 @@ function App(): JSX.Element {
   ])
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <BlueprintProvider>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </BlueprintProvider>
   )
 
   // <>
