@@ -52,7 +52,8 @@
     "react-router-dom": "^6.23.0",
     "sort-by": "^1.2.0",
     "tailwind-merge": "^2.3.0",
-    "zod": "^3.23.5"
+    "zod": "^3.23.5",
+    "zod-validation-error": "^3.2.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",

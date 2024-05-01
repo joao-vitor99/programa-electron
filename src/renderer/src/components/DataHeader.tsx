@@ -9,9 +9,9 @@ interface DataHeaderProps {
   }
 }
 
-const DataHeader = (props: DataHeaderProps) => {
+const DataHeader = (props: DataHeaderProps): React.ReactNode => {
   return (
-    <div className="flex flex-col w-full gap-2 pb-4">
+    <div className="flex flex-col w-full gap-2 pb-4 relative">
       <Header title={props.title} />
 
       {props.menuProps !== undefined ? (
